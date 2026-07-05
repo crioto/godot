@@ -1,5 +1,6 @@
 import os
 import platform
+import shutil
 import subprocess
 import sys
 from typing import TYPE_CHECKING
@@ -91,7 +92,6 @@ def get_flags():
         "arch": detect_arch(),
         "supported": ["library", "mono"],
     }
-
 
 def configure(env: "SConsEnvironment"):
     # Validate arch.
@@ -237,7 +237,7 @@ def configure(env: "SConsEnvironment"):
         env.Append(CPPDEFINES=["SOWRAP_ENABLED"])
 
     if env["wayland"]:
-        if subprocess.run(["wayland-scanner", "-v"], capture_output=True, shell=True).returncode != 0:
+        if not env.WhereIs("wayland-scanner"):
             print_warning("wayland-scanner not found. Disabling Wayland support.")
             env["wayland"] = False
 
